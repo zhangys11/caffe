@@ -1,0 +1,47 @@
+=== weight_decay ===
+
+The weight_decay meta parameter govern the regularization term of the neural net.
+
+During training a regularization term is added to the network's loss to compute the backprop gradient. The weight_decay value determines how dominant this regularization term will be in the gradient computation.
+
+As a rule of thumb, the more training examples you have, the weaker this term should be. The more parameters you have (i.e., deeper net, larger filters, larger InnerProduct layers etc.) the higher this term should be.
+
+Caffe also allows you to choose between L2 regularization (default, sum of weight squares) and L1 regularization (sum of weight absolute values), by setting
+
+regularization_type: "L1"
+
+However, since in most cases weights are small numbers (i.e., -1<w<1), the L2 norm of the weights is significantly smaller than their L1 norm. Thus, if you choose to use regularization_type: "L1" you might need to tune weight_decay to a significantly smaller value.
+
+(There is also a L0 norm, which corresponds to the total number of zero-valued weights. L0 and L1 tends to get a sparse solution, i.e. only keep principle features).
+
+While learning rate may (and usually does) change during training, the regularization weight is fixed throughout.
+
+
+=== decay_multi ===
+
+In the solver file, we can set a global regularization loss using the weight_decay and regularization_type options.
+
+In many cases we want different weight decay rates for different layers. This can be done by setting the decay_mult option for each layer in the network definition file, where decay_mult is the multiplier on the global weight decay rate, so the actual weight decay rate applied for one layer is decay_mult*weight_decay.
+
+For example, the following defines a convolutional layer with NO weight decay regardless of the options in the solver file.
+
+layer {
+  name: "Convolution1"
+  type: "Convolution"
+  bottom: "data"
+  top: "Convolution1"
+  param {
+    decay_mult: 0
+  }
+  convolution_param {
+    num_output: 32
+    pad: 0
+    kernel_size: 3
+    stride: 1
+    weight_filler {
+      type: "xavier"
+    }
+  }
+}
+
+
