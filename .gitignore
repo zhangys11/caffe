@@ -1,0 +1,8 @@
+# Obsidian 工作区配置（个人本地状态，不入库）
+.obsidian/
+
+# 重构过程产生的中间产物
+.restructure/
+
+# macOS
+.DS_Store
